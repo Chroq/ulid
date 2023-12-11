@@ -26,7 +26,7 @@ import (
 	"testing/quick"
 	"time"
 
-	"github.com/oklog/ulid/v2"
+	"github.com/Chroq/ulid/v2"
 )
 
 func ExampleULID() {
@@ -691,6 +691,30 @@ func TestULID_Bytes(t *testing.T) {
 	bid[len(bid)-1]++
 	if bytes.Equal(id.Bytes(), bid) {
 		t.Error("Bytes() returned a reference to ulid underlying array!")
+	}
+}
+
+func TestUUIDToULID(t *testing.T) {
+	expected := "015549f0-1d7e-3a66-a08c-07ce13d25363"
+	ulid := ulid.MustParse("01AN4Z07BY79KA1307SR9X4MV3")
+
+	got := ulid.ToUUID()
+	if got != expected {
+		t.Errorf("expected %v, got %v", expected, got)
+	}
+}
+
+func TestULIDToUUID(t *testing.T) {
+	expected := ulid.MustParse("01AN4Z07BY79KA1307SR9X4MV3")
+	uuid := "015549f0-1d7e-3a66-a08c-07ce13d25363"
+
+	got, err := ulid.UUIDToULID(uuid)
+	if err != nil {
+		t.Errorf("expected no error, got %v", err)
+	}
+
+	if got != expected {
+		t.Errorf("expected %v, got %v", expected, got)
 	}
 }
 
