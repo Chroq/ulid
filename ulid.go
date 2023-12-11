@@ -18,11 +18,13 @@ import (
 	"bytes"
 	"database/sql/driver"
 	"encoding/binary"
+	"encoding/hex"
 	"errors"
 	"io"
 	"math"
 	"math/bits"
 	"math/rand"
+	"strings"
 	"sync"
 	"time"
 )
@@ -704,4 +706,41 @@ func (u *uint80) Add(n uint64) (overflow bool) {
 
 func (u uint80) IsZero() bool {
 	return u.Hi == 0 && u.Lo == 0
+}
+
+// ToUUID converts a ULID to an UUID string representation
+// Example: 015549f0-1d7e-3a66-a08c-07ce13d25363 -> 01AN4Z07BY79KA1307SR9X4MV3
+func (id ULID) ToUUID() string {
+	var buf [36]byte
+
+	hexBuf := make([]byte, 32)
+	hex.Encode(hexBuf, id[:])
+
+	copy(buf[:8], hexBuf[:8])
+	buf[8] = '-'
+	copy(buf[9:13], hexBuf[8:12])
+	buf[13] = '-'
+	copy(buf[14:18], hexBuf[12:16])
+	buf[18] = '-'
+	copy(buf[19:23], hexBuf[16:20])
+	buf[23] = '-'
+	copy(buf[24:], hexBuf[20:])
+
+	return string(buf[:])
+}
+
+// UUIDToULID converts a UUID string to an ULID
+// Example: 01AN4Z07BY79KA1307SR9X4MV3 -> 015549f0-1d7e-3a66-a08c-07ce13d25363
+func UUIDToULID(uuid string) (ULID, error) {
+	var ulid ULID
+
+	cleanedUUID := strings.Replace(uuid, "-", "", 4)
+
+	decoded, err := hex.DecodeString(cleanedUUID)
+	if err != nil {
+		return ulid, err
+	}
+
+	copy(ulid[:], decoded)
+	return ulid, nil
 }
