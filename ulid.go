@@ -583,8 +583,8 @@ type rng interface{ Int63n(n int64) int64 }
 // LockedMonotonicReader wraps a MonotonicReader with a sync.Mutex for safe
 // concurrent use.
 type LockedMonotonicReader struct {
-	mu sync.Mutex
 	MonotonicReader
+	mu sync.Mutex
 }
 
 // MonotonicRead synchronizes calls to the wrapped MonotonicReader.
@@ -598,11 +598,11 @@ func (r *LockedMonotonicReader) MonotonicRead(ms uint64, p []byte) (err error) {
 // MonotonicEntropy is an opaque type that provides monotonic entropy.
 type MonotonicEntropy struct {
 	io.Reader
+	rng     rng
+	entropy uint80
 	ms      uint64
 	inc     uint64
-	entropy uint80
 	rand    [8]byte
-	rng     rng
 }
 
 // MonotonicRead implements the MonotonicReader interface.

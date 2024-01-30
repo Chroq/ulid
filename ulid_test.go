@@ -125,8 +125,8 @@ func TestMustParse(t *testing.T) {
 	t.Parallel()
 
 	for _, tc := range []struct {
-		name string
 		fn   func(string) ulid.ULID
+		name string
 	}{
 		{"MustParse", ulid.MustParse},
 		{"MustParseStrict", ulid.MustParseStrict},
@@ -198,9 +198,9 @@ func TestMarshalingErrors(t *testing.T) {
 
 	var id ulid.ULID
 	for _, tc := range []struct {
-		name string
-		fn   func([]byte) error
 		err  error
+		fn   func([]byte) error
+		name string
 	}{
 		{"UnmarshalBinary", id.UnmarshalBinary, ulid.ErrDataSize},
 		{"UnmarshalText", id.UnmarshalText, ulid.ErrDataSize},
@@ -555,10 +555,10 @@ func TestScan(t *testing.T) {
 	id := ulid.MustNew(123, crand.Reader)
 
 	for _, tc := range []struct {
-		name string
 		in   interface{}
-		out  ulid.ULID
 		err  error
+		name string
+		out  ulid.ULID
 	}{
 		{"string", id.String(), id, nil},
 		{"bytes", id[:], id, nil},
@@ -585,8 +585,8 @@ func TestScan(t *testing.T) {
 func TestMonotonic(t *testing.T) {
 	now := ulid.Now()
 	for _, e := range []struct {
-		name string
 		mk   func() io.Reader
+		name string
 	}{
 		{"cryptorand", func() io.Reader { return crand.Reader }},
 		{"mathrand", func() io.Reader { return rand.New(rand.NewSource(int64(now))) }},
@@ -737,9 +737,9 @@ func benchmarkMakeULID(b *testing.B, f func(uint64, io.Reader)) {
 	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	for _, tc := range []struct {
+		entropy    io.Reader
 		name       string
 		timestamps []uint64
-		entropy    io.Reader
 	}{
 		{"WithCrypoEntropy", []uint64{123}, crand.Reader},
 		{"WithEntropy", []uint64{123}, rng},
